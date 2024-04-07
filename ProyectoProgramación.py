@@ -3,6 +3,17 @@ from datetime import datetime #Importa la librería datetime
 
 tareas_Registros = [] #Arreglo a utilizar para almacenar los registros de las tareas
 
+def carga_Registros(): #Funcion para cargar los registros en archivo plano (txt) y ponerlas en un array bidimensional
+    
+    with open('Datos_Guardado.txt','r') as file: # Abre y cierra automáticamente el archivo tomandolo como nombre file (variable)
+        registros = file.readlines() #Guarda los datos del txt en arreglo (unidimensional sin formato)
+
+        for registro in registros: #Se refiere a cada dato que haya en el arreglo
+            campos = registro.strip().split(',') #Formatea cada registro o tarea, para eliminar los \n y separar los campos en array provisional
+            campos[0],campos[1],campos[2],campos[3],campos[4] = campos[0].strip(), campos[1].strip(), campos[2].strip(), float(campos[3].strip()), campos[4].strip() #Da los formatos finales a cada campo del array provisional (**Nota: El campo[3] = costo, pasa a ser float), elinando espacios en blanco
+            
+            tareas_Registros.append(campos) #Agrega cada registro formateado al array central
+        
 def agregar_Tarea():
     try: #Manejo de errores
         fecha_Nuevo = input('\nDigite la fecha (dd/mm/aaaa): ') #Ingresa la fecha nueva en el formato establecido    
@@ -166,64 +177,80 @@ def estadisticas_Simples(tareas):
         for actividad in sorted(tareas): #Im
             print(f'ID: {tareas.index(actividad) + 1}, Fecha: {actividad[0]}, Titulo: {actividad[1]}, Descripcion: {actividad[2]}, Costo: ${actividad[3]}, Estado: {actividad[4]}') #Muestra todas las tareas que el usuario haya registrado
 
+def guardar_Datos(tareas): #Guardar los nuevos ingresos de datos y los existentes 
+
+    with open('Datos_Guardado.txt', 'w') as file: #Abre el documento en formato txt, con w sobre-escribe el documento
+            
+        for registro in tareas: #Ciclo for para ingresar al registro 
+                
+            regitro_Formato = ", ".join(str(campo) for campo in registro) #Formaro con coma espacion por cada linea
+            print(regitro_Formato) #Muestra en pantalla el registro formato
+            file.write(regitro_Formato + "\n") #Formato para rescribir en el documento y con \n pasa de linea a cada actividad
+
+carga_Registros()
+
 print("¡Bienvenido!")#Saludo Inicial al Usuario
 
-while True: #Repite Indefinidamente el Menu Principal
+def main():
+    while True: #Repite Indefinidamente el Menu Principal
     
-    opcion = str(input("\n\n---------- Menu Principal ----------\n\nA) Ver Tareas\nB) Administrar Tareas\nC) Estadísticas\nD) Salir\n\nSeleccione una opción: ")).lower() #Opción para el Menu Principal
+        opcion = str(input("\n\n---------- Menu Principal ----------\n\nA) Ver Tareas\nB) Administrar Tareas\nC) Estadísticas\nD) Salir\n\nSeleccione una opción: ")).lower() #Opción para el Menu Principal
 
-    if opcion == "a": #Opción de ver las tareas
-        mostrar_Tareas(tareas_Registros)
+        if opcion == "a": #Opción de ver las tareas
+            mostrar_Tareas(tareas_Registros)
 
-    elif opcion == "b": #Opción de Administrar tareas
+        elif opcion == "b": #Opción de Administrar tareas
 
-        while True: #Se repite indefinidamente el segundo menu (Menu administrativo)
-            opcion_Menu2 = str(input("\n\n---------- Menu Administrativo ----------\n\nA) Agregar Tareas\nB) Editar Tareas\nC) Eliminar Tareas\nD) Marcar Tarea Completa\nE) Salir\n\nSeleccione una opción: ")).lower()
-            
-            if opcion_Menu2 == "a":  #opcion de agregar tareas
-                agregar_Tarea()
-
-            elif opcion_Menu2 == "b": #opcion de editar tareas 
-                if(len(tareas_Registros)) == 0:
-
-                    print("\nError: No hay tareas para editar")
-
-                else:
-                    try:
-                        indice = int(input("\nSeleccione el ID de la tarea que desea editar: ")) - 1  #Solicita al usuario el ID de la tarea a editar
-                        if 0 <= indice < len(tareas_Registros): #Valida que la tarea seleccionada exista
-                            editar_Tarea(indice,  tareas_Registros)
-                        else:
-                            print('\nError: La tarea seleccionada no existe')
-                        
-                    except:
-                        print("\nError: Opcion incorrecta, debe de usar el numero de ID")  #Valida que el numero de ID sea correcto
-
-            elif opcion_Menu2 == "c":  #opcion de eliminar tareas
-                eliminar_tarea(tareas_Registros)
-
-            elif opcion_Menu2 == "d": #opcion de marcar tareas
-                marcar_tarea(tareas_Registros)
+            while True: #Se repite indefinidamente el segundo menu (Menu administrativo)
+                opcion_Menu2 = str(input("\n\n---------- Menu Administrativo ----------\n\nA) Agregar Tareas\nB) Editar Tareas\nC) Eliminar Tareas\nD) Marcar Tarea Completa\nE) Salir\n\nSeleccione una opción: ")).lower()
                 
+                if opcion_Menu2 == "a":  #opcion de agregar tareas
+                    agregar_Tarea()
 
-            elif opcion_Menu2 == "e": #opcion de salir del menu administrativo
-                print("\nSalir del menu administrativo")
-                break
+                elif opcion_Menu2 == "b": #opcion de editar tareas 
+                    if(len(tareas_Registros)) == 0:
 
-            else:#En caso de opción Incorrecta
-                print("\nError: Opción Incorrecta, intente de nuevo. \nIngrese una opción de la A a la E.")
+                        print("\nError: No hay tareas para editar")
+
+                    else:
+                        try:
+                            indice = int(input("\nSeleccione el ID de la tarea que desea editar: ")) - 1  #Solicita al usuario el ID de la tarea a editar
+                            if 0 <= indice < len(tareas_Registros): #Valida que la tarea seleccionada exista
+                                editar_Tarea(indice,  tareas_Registros)
+                            else:
+                                print('\nError: La tarea seleccionada no existe')
+                            
+                        except:
+                            print("\nError: Opcion incorrecta, debe de usar el numero de ID")  #Valida que el numero de ID sea correcto
+
+                elif opcion_Menu2 == "c":  #opcion de eliminar tareas
+                    eliminar_tarea(tareas_Registros)
+
+                elif opcion_Menu2 == "d": #opcion de marcar tareas
+                    marcar_tarea(tareas_Registros)
+                    
+
+                elif opcion_Menu2 == "e": #opcion de salir del menu administrativo
+                    print("\nSalir del menu administrativo")
+                    break
+
+                else:#En caso de opción Incorrecta
+                    print("\nError: Opción Incorrecta, intente de nuevo. \nIngrese una opción de la A a la E.")
+                
+            #Salida Ciclo While 2 (Menu Administrativo)
             
-        #Salida Ciclo While 2 (Menu Administrativo)
-        
-    elif  opcion == "c": #Opción Estadisticas Simple
-        
-        estadisticas_Simples(tareas_Registros) #Manda a llamar la función y como parámetro usa el arreglo bidimensional con los registros
+        elif  opcion == "c": #Opción Estadisticas Simple
+            
+            estadisticas_Simples(tareas_Registros) #Manda a llamar la función y como parámetro usa el arreglo bidimensional con los registros
 
-    elif opcion == "d": #Opción Salir
-        print("\n¡Hasta Luego!") #Se da la despedida al usuario al dar a la opción salir
-        break
-    
-    else: #En caso de opción Incorrecta
-        print("\nError: Opción incorrecta, intente de nuevo. \nIngrese una opción de la A a la D.") 
+        elif opcion == "d": #Opción Salir
+            guardar_Datos(tareas_Registros)
+            print("\n¡Hasta Luego!") #Se da la despedida al usuario al dar a la opción salir
+            break
+        
+        else: #En caso de opción Incorrecta
+            print("\nError: Opción incorrecta, intente de nuevo. \nIngrese una opción de la A a la D.") 
 
-#Salida del ciclo While Menu Principal
+    #Salida del ciclo While Menu Principal
+
+main()
