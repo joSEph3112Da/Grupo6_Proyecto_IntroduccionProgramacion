@@ -10,7 +10,7 @@ def carga_Registros(): #Funcion para cargar los registros en archivo plano (txt)
 
         for registro in registros: #Se refiere a cada dato que haya en el arreglo
             campos = registro.strip().split(',') #Formatea cada registro o tarea, para eliminar los \n y separar los campos en array provisional
-            campos[0],campos[1],campos[2],campos[3],campos[4] = campos[0].strip(), campos[1].strip(), campos[2].strip(), float(campos[3].strip()), campos[4].strip() #Da los formatos finales a cada campo del array provisional (**Nota: El campo[3] = costo, pasa a ser float), elinando espacios en blanco
+            campos[0],campos[1],campos[2],campos[3],campos[4] = campos[0].strip(), campos[1].strip(), campos[2].strip(), float(campos[3].strip()), campos[4].strip() #Da los formatos finales a cada campo del array provisional (**Nota: El campo[3] = costo, pasa a ser float), eliminando espacios en blanco
             
             tareas_Registros.append(campos) #Agrega cada registro formateado al array central
         
@@ -58,8 +58,10 @@ def editar_Tarea(index, tareas): #Proceso para editar tareas ya ingresada
         tarea_Editar = tareas[index] #Tareas existentes
 
         while True: #Con este while, entramos al menu de edicion de tareas
-            print(f'\nID: {tareas.index(tareas[index]) + 1}, Fecha: {tarea_Editar[0]}, Titulo: {tarea_Editar[1]}, Descripcion: {tarea_Editar[2]}, Costo: ${tarea_Editar[3]}, Estado: {tarea_Editar[4]}') #Este print nos muestra las tareas ingresad
+            print(f'\nID: {tareas.index(tareas[index]) + 1}, Fecha: {tarea_Editar[0]}, Titulo: {tarea_Editar[1]}, Descripcion: {tarea_Editar[2]}, Costo: ${tarea_Editar[3]}, Estado: {tarea_Editar[4]}') #Este print nos muestra las tareas ingresadas
+
             opcion_Editar = str(input("\n---------- Menu Editar Tarea ---------\n\nA) Fecha\nB) Titulo\nC) Descripcion\nD) Costo\nE) Salir\n\nSeleccione una opcion (A-E): ")).lower() #Menu de seleccion para editar tareas
+
             sub_Indice = 0 #Posición a editar, por default será 0 (fecha)
                 
             if opcion_Editar == "a": #Entra a la opcion editar fecha
@@ -67,9 +69,9 @@ def editar_Tarea(index, tareas): #Proceso para editar tareas ya ingresada
                     fecha_edicion = input('\nDigite la fecha a editar (dd/mm/aaaa): ') #Opcion para selecionar la fecha a editar
                     formato_fecha_Edicion = datetime.strptime(fecha_edicion, '%d/%m/%Y') #Opcion para seleccionar el formato
                     tarea_Editar[sub_Indice] = fecha_edicion #Toma la posicion de la fecha ingresada
-                    print("\nLa fecha fue correctamente editada.") #Imprime ejecucion cr
+                    print("\nLa fecha fue correctamente editada.") #Imprime ejecucion fue editada
                     
-                except: #Si el usuario ingresa un formato de fecha incorrecto, muestra el siguiente err
+                except: #Si el usuario ingresa un formato de fecha incorrecto, muestra el siguiente error
                     print("\nError: Opcion incorrecta, favor seleccionar fecha en formato correcto (dd/mm/aaaa).") 
 
 
@@ -135,9 +137,11 @@ def marcar_tarea(tareas):
 
             print(f"\nLa tarea con título {tarea_marcar[1]} se marcó como Completa")  #Imprime que la tarea fue marcada correctamente
 
-            
         except:
             print("\nError: Se debe ingresar el numero de tarea, no se aceptan letras") #Error por ingresar letras como valor
+            
+def convertir_a_fecha(fecha_str): #Convierte una string a formato Fecha, eso se usa en el ordenamiento de actividades por fecha
+    return datetime.strptime(fecha_str, '%d/%m/%Y')
 
 def estadisticas_Simples(tareas):
     #Variables para contadores
@@ -174,7 +178,9 @@ def estadisticas_Simples(tareas):
         print(f'\n{'Daily Planner - Actividades Ordenadas':^110}') #Imprime el titulo
         print(f'{'-'*110:^110}') #Centra el titulo
 
-        for actividad in sorted(tareas): #Im
+        tareas_Ordenadas = sorted(tareas, key=lambda x: convertir_a_fecha(x[0])) #Nueva lista ordenada, creando función anónima, para convertir el valor en pos(0) a fecha y ordenarlo correctamente
+        
+        for actividad in tareas_Ordenadas: #Imprime la lista de actividades ordenadas
             print(f'ID: {tareas.index(actividad) + 1}, Fecha: {actividad[0]}, Titulo: {actividad[1]}, Descripcion: {actividad[2]}, Costo: ${actividad[3]}, Estado: {actividad[4]}') #Muestra todas las tareas que el usuario haya registrado
 
 def guardar_Datos(tareas): #Guardar los nuevos ingresos de datos y los existentes 
@@ -184,14 +190,12 @@ def guardar_Datos(tareas): #Guardar los nuevos ingresos de datos y los existente
         for registro in tareas: #Ciclo for para ingresar al registro 
                 
             regitro_Formato = ", ".join(str(campo) for campo in registro) #Formaro con coma espacion por cada linea
-            print(regitro_Formato) #Muestra en pantalla el registro formato
             file.write(regitro_Formato + "\n") #Formato para rescribir en el documento y con \n pasa de linea a cada actividad
 
-carga_Registros()
-
-print("¡Bienvenido!")#Saludo Inicial al Usuario
-
 def main():
+    carga_Registros()
+    print("¡Bienvenido!")#Saludo Inicial al Usuario
+
     while True: #Repite Indefinidamente el Menu Principal
     
         opcion = str(input("\n\n---------- Menu Principal ----------\n\nA) Ver Tareas\nB) Administrar Tareas\nC) Estadísticas\nD) Salir\n\nSeleccione una opción: ")).lower() #Opción para el Menu Principal
