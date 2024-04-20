@@ -4,15 +4,17 @@ from datetime import datetime #Importa la librería datetime
 tareas_Registros = [] #Arreglo a utilizar para almacenar los registros de las tareas
 
 def carga_Registros(): #Funcion para cargar los registros en archivo plano (txt) y ponerlas en un array bidimensional
-    
-    with open('Datos_Guardado.txt','r') as file: # Abre y cierra automáticamente el archivo tomandolo como nombre file (variable)
-        registros = file.readlines() #Guarda los datos del txt en arreglo (unidimensional sin formato)
+    try:
+        with open('Datos_Guardado.txt','r') as file: # Abre y cierra automáticamente el archivo tomandolo como nombre file (variable)
+            registros = file.readlines() #Guarda los datos del txt en arreglo (unidimensional sin formato)
 
-        for registro in registros: #Se refiere a cada dato que haya en el arreglo
-            campos = registro.strip().split(',') #Formatea cada registro o tarea, para eliminar los \n y separar los campos en array provisional
-            campos[0],campos[1],campos[2],campos[3],campos[4] = campos[0].strip(), campos[1].strip(), campos[2].strip(), float(campos[3].strip()), campos[4].strip() #Da los formatos finales a cada campo del array provisional (**Nota: El campo[3] = costo, pasa a ser float), eliminando espacios en blanco
-            
-            tareas_Registros.append(campos) #Agrega cada registro formateado al array central
+            for registro in registros: #Se refiere a cada dato que haya en el arreglo
+                campos = registro.strip().split(',') #Formatea cada registro o tarea, para eliminar los \n y separar los campos en array provisional
+                campos[0],campos[1],campos[2],campos[3],campos[4] = campos[0].strip(), campos[1].strip(), campos[2].strip(), float(campos[3].strip()), campos[4].strip() #Da los formatos finales a cada campo del array provisional (**Nota: El campo[3] = costo, pasa a ser float), eliminando espacios en blanco
+                
+                tareas_Registros.append(campos) #Agrega cada registro formateado al array central
+    except:
+        return
         
 def agregar_Tarea():
     try: #Manejo de errores
