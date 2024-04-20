@@ -116,8 +116,11 @@ def eliminar_tarea(tareas): #funcion de eliminar tareas
     else:
         try:
             index = int(input('Seleccione el ID del Registro a Eliminar: ')) - 1 #Solicita al usuario el numero de ID de la tarea a eliminar
-            print(f'\nSe ha eliminado la tarea con título: {tareas[index][1]}')  #Indica cual tarea fue eliminada
-            del tareas[index] #Elimina la tarea seleccionada
+            if 0 <= index < len(tareas):
+                print(f'\nSe ha eliminado la tarea con título: {tareas[index][1]}')  #Indica cual tarea fue eliminada
+                del tareas[index] #Elimina la tarea seleccionada
+            else:
+                print('\nError: La tarea seleccionada no existe')
 
         except:
             print('\nError: Opcion incorrecta, debe de usar el numero de ID')  #Error por numero de ID incorrecto
